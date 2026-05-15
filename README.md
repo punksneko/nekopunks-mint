@@ -14,10 +14,11 @@ NEKOPUNKS is an ERC-20 token on Base network. Mint via Claude AI agent.
 
 Install the skill:
 bash
-curl -o ~/.claude/skills/nekopunks/SKILL.md \
-  https://raw.githubusercontent.com/nekopunks/nekopunks-mint/main/SKILL.md
+mkdir -p ~/.claude/skills/nekopunks && \
+curl -L -o ~/.claude/skills/nekopunks/SKILL.md \
+  https://raw.githubusercontent.com/punksneko/nekopunks-mint/main/SKILL.md
 
-Then run Claude and type /nekopunks.
+Then run Claude and type `/nekopunks`.
 
 ## Links
 - [BaseScan](https://basescan.org/address/0x664Cb6D5BdCFBE3556E002BD70151205201A11C7)
