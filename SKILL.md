@@ -1,4 +1,3 @@
-SKILL.md:
 ---
 name: nekopunks
 description: Mint NEKOPUNKS (NKPK) token on Base network
@@ -25,22 +24,14 @@ Mint NEKOPUNKS (NKPK) token on Base network via Claude.
 ## How to Mint
 
 ### Step 1: Check Mint Status
-Run this command to check total minted:
 bash
 cast call 0x664Cb6D5BdCFBE3556E002BD70151205201A11C7 "totalMinted()" --rpc-url https://mainnet.base.org
 
 ### Step 2: Check User's Mint Count
-Check how many times a wallet has minted:
 bash
 cast call 0x664Cb6D5BdCFBE3556E002BD70151205201A11C7 "mintCounts(address)" --args <WALLET_ADDRESS> --rpc-url https://mainnet.base.org
 
-### Step 3: Generate Mint Transaction
-Tell the user to send this transaction:
-- **To:** 0x664Cb6D5BdCFBE3556E002BD70151205201A11C7
-- **Value:** 0.001 ETH
-- **Data:** 0x1249c58b (mint() function selector)
-
-Or use cast:
+### Step 3: Mint
 bash
 cast send 0x664Cb6D5BdCFBE3556E002BD70151205201A11C7 "mint()" --value 0.001ether --rpc-url https://mainnet.base.org --private-key <PRIVATE_KEY>
 
@@ -60,6 +51,4 @@ cast send 0x664Cb6D5BdCFBE3556E002BD70151205201A11C7 "mint()" --value 0.001ether
 
 ## Links
 - **BaseScan:** https://basescan.org/address/0x664Cb6D5BdCFBE3556E002BD70151205201A11C7
-- **GitHub:** https://github.com/nekopunks/nekopunks-mint
-
-
+- **GitHub:** https://github.com/punksneko/nekopunks-mint
