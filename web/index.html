@@ -142,8 +142,8 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
           <div class="d-value" id="totalSupply">—</div>
         </div>
         <div class="detail-item">
-          <div class="d-label">Max Supply</div>
-          <div class="d-value">100B</div>
+          <div class="d-label">Mint Status</div>
+          <div class="d-value" id="mintStatus">—</div>
         </div>
         <div class="detail-item">
           <div class="d-label">Minted</div>
@@ -240,14 +240,16 @@ function formatShort(n) {
 
 async function fetchProgress() {
   try {
-    const [totalSupply, totalPublicMinted] = await Promise.all([
+    const [totalSupply, remainingRaw, mintActiveRaw] = await Promise.all([
       rpcCall('totalSupply()'),
-      rpcCall('totalPublicMinted()')
+      rpcCall('remainingPublicMint()'),
+      rpcCall('mintActive()')
     ]);
 
-    const minted = totalPublicMinted || totalSupply || 0n;
-    const remaining = PUBLIC_MINT_CAP > minted ? PUBLIC_MINT_CAP - minted : 0n;
+    const remaining = remainingRaw || 0n;
+    const minted = PUBLIC_MINT_CAP > remaining ? PUBLIC_MINT_CAP - remaining : 0n;
     const percent = Number(minted * 10000n / PUBLIC_MINT_CAP) / 100;
+    const mintActive = mintActiveRaw && mintActiveRaw !== 0n;
 
     // Update bar
     const bar = document.getElementById('progressBar');
@@ -267,6 +269,7 @@ async function fetchProgress() {
     totalSupplyEl.textContent = formatShort(totalSupply || 0n);
     detailMinted.textContent = formatShort(minted);
     detailRemaining.textContent = formatShort(remaining);
+    document.getElementById('mintStatus').textContent = mintActive ? '🟢 Active' : '🔴 Paused';
 
   } catch(e) {
     console.error('Fetch error:', e);
@@ -294,8 +297,8 @@ function keccak256(str) {
   // Fallback: use pre-computed selectors
   const selectors = {
     'totalSupply()': '0x18160ddd',
-    'totalPublicMinted()': '0x5a9b0b89',
-    'remainingPublicMint()': '0x6e5af642'
+    'remainingPublicMint()': '0xc974c437',
+    'mintActive()': '0x25fd90f3'
   };
   return selectors[signature] || '0x00000000';
 }
