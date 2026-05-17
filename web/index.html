@@ -22,6 +22,31 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
 .stat-card.highlight{background:linear-gradient(135deg,rgba(196,77,255,0.12),rgba(196,77,255,0.04));border-color:rgba(196,77,255,0.2)}
 .stat-card.highlight::before{background:linear-gradient(90deg,#c44dff,#6b9dff)}
 
+/* Mint Progress Section */
+.mint-progress{margin-bottom:28px}
+.progress-card{background:linear-gradient(135deg,rgba(196,77,255,0.08),rgba(196,77,255,0.02));border-radius:16px;padding:24px;border:1px solid rgba(196,77,255,0.15)}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.progress-title{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+.progress-stats{display:flex;gap:16px;font-size:12px;color:rgba(255,255,255,0.5)}
+.progress-stats span{display:flex;align-items:center;gap:4px}
+.bar-container{background:rgba(0,0,0,0.4);border-radius:12px;height:28px;overflow:hidden;position:relative;position:relative}
+.bar-fill{height:100%;border-radius:12px;background:linear-gradient(90deg,#ff6b9d,#c44dff,#6b9dff);transition:width 1.5s ease-out;position:relative;min-width:0}
+.bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,0.15) 0%,transparent 50%);border-radius:12px}
+.bar-glow{position:absolute;top:0;right:0;bottom:0;width:30px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3));border-radius:0 12px 12px 0;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
+.bar-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,0.8);white-space:nowrap;z-index:2}
+.mint-numbers{display:flex;justify-content:space-between;margin-top:10px;font-size:12px;color:rgba(255,255,255,0.4)}
+.mint-numbers .minted{color:#c44dff;font-weight:600}
+.mint-numbers .remaining{color:rgba(255,255,255,0.3)}
+.progress-detail{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.detail-item{background:rgba(0,0,0,0.2);border-radius:8px;padding:10px;text-align:center}
+.detail-item .d-label{font-size:10px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.detail-item .d-value{font-size:14px;font-weight:700;color:#fff}
+.loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
+@keyframes dots{0%{content:''}25%{content:'.'}50%{content:'..'}75%{content:'...'}100%{content:''}}
+.refresh-btn{background:none;border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.4);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s}
+.refresh-btn:hover{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7)}
+
 .section{margin-bottom:24px}
 .section-title{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .section-desc{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:12px;line-height:1.5}
@@ -51,6 +76,10 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
 .endpoint-box{background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.15);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
 .endpoint-box .url{font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:#67e8f9;word-break:break-all}
 .endpoint-box .copy-btn{position:static;flex-shrink:0}
+
+/* Live indicator */
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#00c864;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
 </style>
 </head>
 <body>
@@ -83,6 +112,48 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
       <div class="label">Max Wallet</div>
       <div class="value">200,000</div>
       <div class="sub">NKPK total</div>
+    </div>
+  </div>
+
+  <!-- Mint Progress -->
+  <div class="mint-progress">
+    <div class="progress-card">
+      <div class="progress-header">
+        <div class="progress-title"><span class="live-dot"></span> Mint Progress</div>
+        <button class="refresh-btn" onclick="fetchProgress()">↻ Refresh</button>
+      </div>
+      <div class="progress-stats">
+        <span>📊 <span id="percentText" class="loading-dots">Loading</span></span>
+        <span>🎯 Cap: 510M NKPK</span>
+      </div>
+      <div class="bar-container">
+        <div class="bar-fill" id="progressBar" style="width:0%">
+          <div class="bar-glow"></div>
+        </div>
+        <div class="bar-label" id="barLabel">Loading...</div>
+      </div>
+      <div class="mint-numbers">
+        <span class="minted" id="mintedAmount">—</span>
+        <span class="remaining" id="remainingAmount">—</span>
+      </div>
+      <div class="progress-detail">
+        <div class="detail-item">
+          <div class="d-label">Total Supply</div>
+          <div class="d-value" id="totalSupply">—</div>
+        </div>
+        <div class="detail-item">
+          <div class="d-label">Max Supply</div>
+          <div class="d-value">100B</div>
+        </div>
+        <div class="detail-item">
+          <div class="d-label">Minted</div>
+          <div class="d-value" id="detailMinted">—</div>
+        </div>
+        <div class="detail-item">
+          <div class="d-label">Remaining</div>
+          <div class="d-value" id="detailRemaining">—</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -146,27 +217,100 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
 </div>
 
 <script>
+const CONTRACT = '0x25b5fB7602f542D482Ca1fCe2b0c7016e193A934';
+const RPC = 'https://mainnet.base.org';
+const PUBLIC_MINT_CAP = 510000000n * 10n**18n;
+const MAX_SUPPLY = 100000000000n * 10n**18n;
+
+function formatNum(n) {
+  if (n >= 10n**27n) return (Number(n / 10n**27n)).toFixed(2) + 'B';
+  if (n >= 10n**24n) return (Number(n / 10n**24n)).toFixed(2) + 'B';
+  if (n >= 10n**21n) return (Number(n / 10n**21n)).toFixed(2) + 'B';
+  if (n >= 10n**18n) return (Number(n / 10n**18n)).toLocaleString() + '';
+  return n.toString();
+}
+
+function formatShort(n) {
+  const num = Number(n) / 1e18;
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+  if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+  return num.toLocaleString();
+}
+
+async function fetchProgress() {
+  try {
+    const [totalSupply, totalPublicMinted] = await Promise.all([
+      rpcCall('totalSupply()'),
+      rpcCall('totalPublicMinted()')
+    ]);
+
+    const minted = totalPublicMinted || totalSupply || 0n;
+    const remaining = PUBLIC_MINT_CAP > minted ? PUBLIC_MINT_CAP - minted : 0n;
+    const percent = Number(minted * 10000n / PUBLIC_MINT_CAP) / 100;
+
+    // Update bar
+    const bar = document.getElementById('progressBar');
+    const barLabel = document.getElementById('barLabel');
+    const percentText = document.getElementById('percentText');
+    const mintedEl = document.getElementById('mintedAmount');
+    const remainingEl = document.getElementById('remainingAmount');
+    const totalSupplyEl = document.getElementById('totalSupply');
+    const detailMinted = document.getElementById('detailMinted');
+    const detailRemaining = document.getElementById('detailRemaining');
+
+    bar.style.width = Math.max(percent, 0.5) + '%';
+    barLabel.textContent = percent.toFixed(2) + '%';
+    percentText.textContent = percent.toFixed(2) + '%';
+    mintedEl.textContent = formatShort(minted) + ' NKPK Minted';
+    remainingEl.textContent = formatShort(remaining) + ' NKPK Remaining';
+    totalSupplyEl.textContent = formatShort(totalSupply || 0n);
+    detailMinted.textContent = formatShort(minted);
+    detailRemaining.textContent = formatShort(remaining);
+
+  } catch(e) {
+    console.error('Fetch error:', e);
+    document.getElementById('barLabel').textContent = 'Error loading';
+  }
+}
+
+async function rpcCall(signature) {
+  const selector = keccak256(signature.slice(0, signature.indexOf('(')));
+  const res = await fetch(RPC, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      jsonrpc: '2.0', id: 1, method: 'eth_call',
+      params: [{to: CONTRACT, data: selector}, 'latest']
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return BigInt(data.result);
+}
+
+function keccak256(str) {
+  // Simple keccak256 for function selectors using ethereum-cryptography
+  // Fallback: use pre-computed selectors
+  const selectors = {
+    'totalSupply()': '0x18160ddd',
+    'totalPublicMinted()': '0x5a9b0b89',
+    'remainingPublicMint()': '0x6e5af642'
+  };
+  return selectors[signature] || '0x00000000';
+}
+
+// Fetch on load
+fetchProgress();
+// Auto-refresh every 30 seconds
+setInterval(fetchProgress, 30000);
+
 function copyCode(btn) {
   const code = btn.nextElementSibling.textContent;
   navigator.clipboard.writeText(code).then(() => {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
-  });
-}
-
-function copyEndpoint(btn) {
-  const url = btn.previousElementSibling.textContent;
-  navigator.clipboard.writeText(url).then(() => {
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
@@ -175,10 +319,7 @@ function copyName(btn) {
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
@@ -187,10 +328,7 @@ function copyUrl(btn) {
   navigator.clipboard.writeText(text).then(() => {
     btn.textContent = 'Copied!';
     btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = 'Copy';
-      btn.classList.remove('copied');
-    }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
