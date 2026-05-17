@@ -269,7 +269,7 @@ async function fetchProgress() {
     totalSupplyEl.textContent = formatShort(totalSupply || 0n);
     detailMinted.textContent = formatShort(minted);
     detailRemaining.textContent = formatShort(remaining);
-    document.getElementById('mintStatus').textContent = mintActive ? '🟢 Active' : '🔴 Paused';
+    document.getElementById('mintStatus').textContent = mintActive ? '🟢 Open' : '🔒 Claude Only';
 
   } catch(e) {
     console.error('Fetch error:', e);
