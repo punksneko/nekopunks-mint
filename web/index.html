@@ -274,11 +274,12 @@ async function fetchProgress() {
   } catch(e) {
     console.error('Fetch error:', e);
     document.getElementById('barLabel').textContent = 'Error loading';
+    document.getElementById('percentText').textContent = '—';
   }
 }
 
 async function rpcCall(signature) {
-  const selector = keccak256(signature.slice(0, signature.indexOf('(')));
+  const selector = getSelector(signature);
   const res = await fetch(RPC, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -292,9 +293,8 @@ async function rpcCall(signature) {
   return BigInt(data.result);
 }
 
-function keccak256(str) {
-  // Simple keccak256 for function selectors using ethereum-cryptography
-  // Fallback: use pre-computed selectors
+function getSelector(signature) {
+  // Pre-computed keccak256 selectors (first 4 bytes)
   const selectors = {
     'totalSupply()': '0x18160ddd',
     'remainingPublicMint()': '0xc974c437',
