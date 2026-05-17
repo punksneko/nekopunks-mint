@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEKOPUNKS — Mint NKPK on Base</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:linear-gradient(135deg,#0a0a1a 0%,#1a0a2e 50%,#0a1a2e 100%);min-height:100vh;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.container{max-width:520px;width:92%;padding:44px 36px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:24px;backdrop-filter:blur(20px)}
+.logo{font-size:52px;text-align:center;margin-bottom:10px}
+h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(90deg,#ff6b9d,#c44dff,#6b9dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.subtitle{text-align:center;color:rgba(255,255,255,0.45);font-size:14px;margin-bottom:32px;line-height:1.5}
+
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+.stat-card{background:linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02));border-radius:16px;padding:20px;text-align:center;border:1px solid rgba(255,255,255,0.08);position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#ff6b9d,#c44dff)}
+.stat-card .icon{font-size:20px;margin-bottom:8px}
+.stat-card .label{font-size:11px;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;font-weight:600}
+.stat-card .value{font-size:22px;font-weight:800;color:#fff}
+.stat-card .sub{font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px}
+.stat-card.highlight{background:linear-gradient(135deg,rgba(196,77,255,0.12),rgba(196,77,255,0.04));border-color:rgba(196,77,255,0.2)}
+.stat-card.highlight::before{background:linear-gradient(90deg,#c44dff,#6b9dff)}
+
+.section{margin-bottom:24px}
+.section-title{font-size:15px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-desc{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:12px;line-height:1.5}
+.code-wrapper{position:relative}
+.code-block{background:rgba(0,0,0,0.5);border-radius:10px;padding:14px 16px;font-family:'SF Mono','Fira Code',monospace;font-size:12px;line-height:1.7;overflow-x:auto;border:1px solid rgba(255,255,255,0.08);white-space:pre-wrap;word-break:break-all;color:#d4d4d4}
+.copy-btn{position:absolute;top:8px;right:8px;padding:5px 12px;border-radius:6px;border:1px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);font-size:11px;cursor:pointer;transition:all .2s;font-family:'Segoe UI',sans-serif}
+.copy-btn:hover{background:rgba(255,255,255,0.15);color:#fff}
+.copy-btn.copied{background:rgba(0,200,100,0.25);border-color:rgba(0,200,100,0.4);color:#00c864}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:12px;padding:10px 0;font-size:13px;color:rgba(255,255,255,0.6);border-bottom:1px solid rgba(255,255,255,0.04);line-height:1.5}
+.steps li:last-child{border-bottom:none}
+.step-num{min-width:22px;height:22px;border-radius:50%;background:rgba(196,77,255,0.15);color:#c44dff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.divider{height:1px;background:rgba(255,255,255,0.06);margin:28px 0}
+.links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.link-btn{padding:10px 20px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:rgba(255,255,255,0.6);font-size:13px;text-decoration:none;transition:all .2s;display:flex;align-items:center;gap:6px}
+.link-btn:hover{background:rgba(255,255,255,0.08);color:#fff;border-color:rgba(255,255,255,0.2)}
+
+/* Tabs */
+.tabs{display:flex;gap:8px;margin-bottom:16px}
+.tab{padding:8px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:rgba(255,255,255,0.03);color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;transition:all .2s;font-weight:500}
+.tab.active{background:rgba(196,77,255,0.15);color:#c44dff;border-color:rgba(196,77,255,0.3)}
+.tab:hover:not(.active){background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.6)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* MCP endpoint box */
+.endpoint-box{background:rgba(0,200,255,0.05);border:1px solid rgba(0,200,255,0.15);border-radius:10px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.endpoint-box .url{font-family:'SF Mono','Fira Code',monospace;font-size:11px;color:#67e8f9;word-break:break-all}
+.endpoint-box .copy-btn{position:static;flex-shrink:0}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="logo">🐱</div>
+  <h1>NEKOPUNKS</h1>
+  <p class="subtitle">Cat-themed ERC-20 token on Base network.<br>Fair launch approach, blockchain transparency, and a simple user experience.</p>
+
+  <div class="stats">
+    <div class="stat-card highlight">
+      <div class="icon">💰</div>
+      <div class="label">Mint Price</div>
+      <div class="value">0.001 ETH</div>
+      <div class="sub">per mint</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">🪙</div>
+      <div class="label">Per Mint</div>
+      <div class="value">20,000</div>
+      <div class="sub">NKPK tokens</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">🔢</div>
+      <div class="label">Max Mints</div>
+      <div class="value">10</div>
+      <div class="sub">per wallet</div>
+    </div>
+    <div class="stat-card">
+      <div class="icon">👛</div>
+      <div class="label">Max Wallet</div>
+      <div class="value">200,000</div>
+      <div class="sub">NKPK total</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">🤖 Mint via Claude AI</div>
+    <p class="section-desc">Mint NEKOPUNKS with Claude on the Base Network</p>
+
+    <div class="tabs">
+      <div class="tab" onclick="showTab('mcp', this)">🔌 MCP Server</div>
+      <div class="tab active" onclick="showTab('skill', this)">📋 Skill</div>
+    </div>
+
+    <!-- MCP Tab -->
+    <div id="mcp-tab" class="tab-content">
+      <p class="section-desc">MCP settings in Claude.ai:</p>
+      <p class="section-desc" style="font-size:12px;color:rgba(255,255,255,0.35)">https://claude.ai/settings/integrations</p>
+
+      <div style="margin-top:16px">
+        <p class="section-desc" style="font-weight:600;color:rgba(255,255,255,0.6)">MCP</p>
+        <div class="endpoint-box" style="margin-top:8px">
+          <span class="url">Name: nekopunks-mcp</span>
+          <button class="copy-btn" onclick="copyName(this)">Copy</button>
+        </div>
+        <div class="endpoint-box" style="margin-top:8px">
+          <span class="url">Url: https://nekopunks-mcp.vercel.app/api/mcp</span>
+          <button class="copy-btn" onclick="copyUrl(this)">Copy</button>
+        </div>
+      </div>
+
+      <ul class="steps" style="margin-top:14px">
+        <li><span class="step-num">1</span>Go to <a href="https://claude.ai/settings/integrations" target="_blank" style="color:#c44dff;text-decoration:none">claude.ai/settings/integrations</a></li>
+        <li><span class="step-num">2</span>Add the Name and URL above</li>
+        <li><span class="step-num">3</span>Paste the copied skill.md</li>
+      </ul>
+
+    </div>
+
+    <!-- Skill Tab -->
+    <div id="skill-tab" class="tab-content active">
+      <p class="section-desc">Open the SKILL.md, copy the content, then paste it into Claude AI (claude.ai) to mint directly from chat.</p>
+
+      <div class="code-wrapper">
+        <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+        <div class="code-block">https://github.com/punksneko/nekopunks-mint/blob/main/SKILL.md</div>
+      </div>
+
+      <ul class="steps" style="margin-top:14px">
+        <li><span class="step-num">1</span>Open <strong>claude.ai</strong> and start a new chat</li>
+        <li><span class="step-num">2</span>Copy the <a href="https://raw.githubusercontent.com/punksneko/nekopunks-mint/main/SKILL.md" target="_blank" style="color:#c44dff;text-decoration:none">SKILL.md</a> content and paste it into Claude</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="links">
+    <a href="https://basescan.org/address/0x25b5fB7602f542D482Ca1fCe2b0c7016e193A934" target="_blank" class="link-btn">📄 BaseScan</a>
+    <a href="https://github.com/punksneko/nekopunks-mint" target="_blank" class="link-btn">🐙 GitHub</a>
+    <a href="https://raw.githubusercontent.com/punksneko/nekopunks-mint/main/SKILL.md" target="_blank" class="link-btn">📋 SKILL.md</a>
+  </div>
+</div>
+
+<script>
+function copyCode(btn) {
+  const code = btn.nextElementSibling.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyEndpoint(btn) {
+  const url = btn.previousElementSibling.textContent;
+  navigator.clipboard.writeText(url).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyName(btn) {
+  const text = btn.previousElementSibling.textContent.replace('Name: ', '');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function copyUrl(btn) {
+  const text = btn.previousElementSibling.textContent.replace('Url: ', '');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function showTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById(tab + '-tab').classList.add('active');
+}
+</script>
+</body>
+</html>
