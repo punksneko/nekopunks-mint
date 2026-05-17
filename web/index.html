@@ -138,14 +138,6 @@ h1{text-align:center;font-size:30px;font-weight:800;background:linear-gradient(9
       </div>
       <div class="progress-detail">
         <div class="detail-item">
-          <div class="d-label">Total Supply</div>
-          <div class="d-value" id="totalSupply">—</div>
-        </div>
-        <div class="detail-item">
-          <div class="d-label">Mint Status</div>
-          <div class="d-value" id="mintStatus">—</div>
-        </div>
-        <div class="detail-item">
           <div class="d-label">Minted</div>
           <div class="d-value" id="detailMinted">—</div>
         </div>
@@ -240,16 +232,13 @@ function formatShort(n) {
 
 async function fetchProgress() {
   try {
-    const [totalSupply, remainingRaw, mintActiveRaw] = await Promise.all([
-      rpcCall('totalSupply()'),
-      rpcCall('remainingPublicMint()'),
-      rpcCall('mintActive()')
+    const [remainingRaw] = await Promise.all([
+      rpcCall('remainingPublicMint()')
     ]);
 
     const remaining = remainingRaw || 0n;
     const minted = PUBLIC_MINT_CAP > remaining ? PUBLIC_MINT_CAP - remaining : 0n;
     const percent = Number(minted * 10000n / PUBLIC_MINT_CAP) / 100;
-    const mintActive = mintActiveRaw && mintActiveRaw !== 0n;
 
     // Update bar
     const bar = document.getElementById('progressBar');
@@ -257,7 +246,6 @@ async function fetchProgress() {
     const percentText = document.getElementById('percentText');
     const mintedEl = document.getElementById('mintedAmount');
     const remainingEl = document.getElementById('remainingAmount');
-    const totalSupplyEl = document.getElementById('totalSupply');
     const detailMinted = document.getElementById('detailMinted');
     const detailRemaining = document.getElementById('detailRemaining');
 
@@ -266,10 +254,8 @@ async function fetchProgress() {
     percentText.textContent = percent.toFixed(2) + '%';
     mintedEl.textContent = formatShort(minted) + ' NKPK Minted';
     remainingEl.textContent = formatShort(remaining) + ' NKPK Remaining';
-    totalSupplyEl.textContent = formatShort(totalSupply || 0n);
     detailMinted.textContent = formatShort(minted);
     detailRemaining.textContent = formatShort(remaining);
-    document.getElementById('mintStatus').textContent = mintActive ? '🟢 Open' : '🔒 Claude Only';
 
   } catch(e) {
     console.error('Fetch error:', e);
